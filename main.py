@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 # Function splits the test and train sets accordingly
 def train_test_split_userwise(df, test_size = 0.2):
@@ -46,7 +48,9 @@ movie_stats = (ratings.groupby('movieId')
                .agg(mean_rating = ('rating', 'mean'), count = ('rating', 'count')))
 
 
+# Split the data as train and test
 
+train_ratings, test_ratings = train_test_split_userwise(df = ratings, test_size= 0.2)
 
 
 
