@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from utilities import train_test_split_userwise
+from utilities import user_CF_recommendation
 
 
 ratings = pd.read_csv('Movie Lens/ml-32m/ratings.csv')
@@ -53,12 +54,12 @@ user_item_centered = user_item_train.sub(user_means, axis=0).fillna(0)
 
 
 # Returns a Numpy array of shape n_users x n_users. Each element is a representation of similarity between users
-# and varies between -1 and 1
-user_similarity = cosine_similarity(user_item_centered)     
+# and varies between -1 and 1. The returning ndarray is wrapped in a DataFrame to preserve index clarity
+user_similarity = pd.DataFrame(cosine_similarity(user_item_centered), index= user_item_centered.index, columns= user_item_centered.index)    
 
+rec_1 = user_CF_recommendation(user_similarity, user_means, user_item_centered, userId= 7, movieId= 531)
 
-
-
+print(rec_1)
 
 
 
