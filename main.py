@@ -2,20 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-
-# Function splits the test and train sets accordingly
-def train_test_split_userwise(df, test_size = 0.2):
-    train, test = [], []
-    for user, group in df.groupby("userId"):            # Returns interator which at each point give a tuple of key and subgroup
-        if len(group) >= 5:                             # Makes sure users that haven't rated much do not get included in test set
-                        # Line below splits each set of ratings by a user into test and train sets
-            tr, te = train_test_split(group, test_size= test_size, random_state= 42)
-            train.append(tr)
-            test.append(te)
-        else:
-            train.append(group)                         # Users with fewer than 5 ratings simply added here for training
-    
-    return pd.concat(train), pd.concat(test)            # Concatenates the list elements into a single pandas dataframe
+from utilities import train_test_split_userwise
 
 
 ratings = pd.read_csv('Movie Lens/ml-32m/ratings.csv')
@@ -53,7 +40,28 @@ movie_stats = (ratings.groupby('movieId')
 train_ratings, test_ratings = train_test_split_userwise(df = ratings, test_size= 0.2)
 
 
+# User-Item matrix for training
+user_item_train = train_ratings.pivot(
+    index= 'userId',
+    columns= 'movieId',
+    values= 'rating'
+)
 
-print(user_item.iloc[0:10, 0:10], "\n \n", movie_stats)
+user_means = user_item_train.mean(axis=1)           # Returns a series with the average rating given by each user
+                                                    # Subtracts each element of a row by the respective row average. Thus centering.
+user_item_centered = user_item_train.sub(user_means, axis=0).fillna(0)
+
+
+# Returns a Numpy array of shape n_users x n_users. Each element is a representation of similarity between users
+# and varies between -1 and 1
+user_similarity = cosine_similarity(user_item_centered)     
+
+
+
+
+
+
+
+#print(user_item.iloc[0:10, 0:10], "\n \n", movie_stats)
 #print(n_users, n_movies, '\n \n', ratings_2.head())
 
