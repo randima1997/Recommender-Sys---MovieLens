@@ -40,6 +40,9 @@ movie_stats = (ratings.groupby('movieId')
 
 train_ratings, test_ratings = train_test_split_userwise(df = ratings, test_size= 0.2)
 
+n_movies = train_ratings.movieId.nunique()
+print("n_movies = ", n_movies)
+
 
 # User-Item matrix for training
 user_item_train = train_ratings.pivot(
@@ -57,10 +60,10 @@ user_item_centered = user_item_train.sub(user_means, axis=0).fillna(0)
 # and varies between -1 and 1. The returning ndarray is wrapped in a DataFrame to preserve index clarity
 user_similarity = pd.DataFrame(cosine_similarity(user_item_centered), index= user_item_centered.index, columns= user_item_centered.index)    
 
-rec_1 = user_CF_recommendation(user_similarity, user_means, user_item_centered, userId= 7, movieId= 531)
+rec_1 = user_CF_recommendation(user_similarity, user_means, user_item_centered, userId= 55)
 
-print(rec_1)
-
+print(rec_1.loc[18:50])
+print(rec_1.head())
 
 
 #print(user_item.iloc[0:10, 0:10], "\n \n", movie_stats)
